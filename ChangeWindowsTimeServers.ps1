@@ -35,11 +35,9 @@
 
 param (
 	[CmdletBinding()]
-	[Parameter(Mandatory=$true, ValueFromPipeline=$false)]
+	[Parameter(Mandatory=$false, ValueFromPipeline=$false)]
 	[ValidateNotNullOrEmpty()][ValidatePattern('^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$')][string]$ntpserver1,
-	[Parameter(Mandatory=$true, ValueFromPipeline=$false)]
 	[ValidateNotNullOrEmpty()][ValidatePattern('^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$')][string]$ntpserver2,
-	[Parameter(Mandatory=$true, ValueFromPipeline=$false)]
 	[ValidateNotNullOrEmpty()][ValidatePattern('^((?:(?:(?:\w[\.\-\+]?)*)\w)+)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})$')][string]$ntpserver3,
 	[Parameter(Mandatory=$false)][Nullable[Boolean]]$hyperv = $null
 )
@@ -132,7 +130,7 @@ function WinTimeSynchronization
 	}
 }
 
-$TimezoneLocation = "Romance Standard Time"
+$TimezoneLocation = "Eastern Standard Time"
 
 if($ntpserver1 -and $ntpserver2 -and $ntpserver3)
 {
@@ -148,9 +146,6 @@ if($ntpserver1 -and $ntpserver2 -and $ntpserver3)
 }
 else
 {
-	if(($args.Count -eq 0) -or ($args.Count -eq 1) -or ($args.Count -eq 2))
-	{
-		
-	}
-	Write-Host "You need to define three domain names on ntp servers that you want use to change."
+	Get-Help $MyInvocation.MyCommand.Definition
+	exit
 }
