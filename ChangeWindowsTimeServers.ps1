@@ -42,8 +42,8 @@ param (
 	[Parameter(Mandatory=$false)][Nullable[Boolean]]$hyperv = $null
 )
 
-function Stop-TimeService {
-	
+function Stop-TimeService
+{
 	if(Get-Service w32time | Where-Object {$_.Status -eq "Running"})
 	{
 		Write-Host "Stopping Windows Time Service..."
@@ -51,8 +51,8 @@ function Stop-TimeService {
 	}
 }
 
-function Start-TimeService {
-	
+function Start-TimeService
+{
 	if(Get-Service w32time | Where-Object {$_.Status -eq "Stopped"})
 	{
 		Write-Host "Starting Windows Time Service..."
@@ -65,16 +65,16 @@ function ChangeTimeServers
 	if(Get-Service w32time | Where-Object {$_.Status -eq "Stopped"})
 	{
 		Write-Host "Setting the Time Zone..."
-        Set-TimeZone -Id "Central Time (US og Canada)" -Confirm -ErrorAction SilentlyContinue
+		Set-TimeZone -Id "Central Time (US og Canada)" -Confirm -ErrorAction SilentlyContinue
 		Write-Host "Change NTP Time Servers..."
-        Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
-	    Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
+		Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
+		Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
 		Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 3 -Value $ntpserver3
-        Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
+		Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
 		Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
 		Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 3 -Value $ntpserver3
 		Start-TimeService
-        # $changeNTPcommand = "w32tm /config /manualpeerlist:'$ntpserver1,0x8 $ntpserver2,0x8 $ntpserver3,0x8' /syncfromflags:manual /reliable:yes /update"
+		# $changeNTPcommand = "w32tm /config /manualpeerlist:'$ntpserver1,0x8 $ntpserver2,0x8 $ntpserver3,0x8' /syncfromflags:manual /reliable:yes /update"
 		$changeNTPcommand = "w32tm /config /manualpeerlist:'$ntpserver1,0x8' /syncfromflags:manual /reliable:yes /update"
 		Invoke-Expression -Command $changeNTPcommand
 	}
@@ -98,13 +98,6 @@ function DisableHyperVTimeSync
 	}
 }
 
-<#
-function SetTimezone
-{
-	Set-TimeZone -Id $TimezoneLocation
-}
-#>
-
 function EnumHyperV
 {
 	if($hyperv -eq $True)
@@ -126,8 +119,6 @@ function WinTimeSynchronization
 		Invoke-Expression -Command 'w32tm /resync'
 	}
 }
-
-# $TimezoneLocation = "Eastern Standard Time"
 
 if($ntpserver1 -and $ntpserver2 -and $ntpserver3)
 {
