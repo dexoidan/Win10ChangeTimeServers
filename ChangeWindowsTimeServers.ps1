@@ -65,19 +65,21 @@ function ChangeTimeServers
 	if(Get-Service w32time | Where-Object {$_.Status -eq "Stopped"})
 	{
 		Write-Host "Setting the Time Zone..."
-		SetTimezone
+		# SetTimezone
+        Set-TimeZone -Id "GMT Standard Time" -Confirm -ErrorAction SilentlyContinue
 		Write-Host "Change NTP Time Servers..."
-		if([Environment]::Is64BitOperatingSystem)
+        $getOSarch = (Get-CimInstance -ClassName win32_operatingsystem).OSArchitecture
+		if($getOSarch -eq "32-bit")
 		{
 			Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
-			Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
-			Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 3 -Value $ntpserver3
+			# Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
+			# Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 3 -Value $ntpserver3
 		}
-		if([Environment]::Is64BitOperatingSystem)
+		if($getOSarch -eq "64-bit")
 		{
 			Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
-			Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
-			Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 3 -Value $ntpserver3
+			# Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
+			# Set-ItemProperty -Path HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 3 -Value $ntpserver3
 		}
 		Start-TimeService
 		$changeNTPcommand = "w32tm /config /manualpeerlist:'$ntpserver1,0x8 $ntpserver2,0x8 $ntpserver3,0x8' /syncfromflags:manual /reliable:yes /update"
@@ -103,10 +105,12 @@ function DisableHyperVTimeSync
 	}
 }
 
+<#
 function SetTimezone
 {
 	Set-TimeZone -Id $TimezoneLocation
 }
+#>
 
 function EnumHyperV
 {
@@ -130,7 +134,7 @@ function WinTimeSynchronization
 	}
 }
 
-$TimezoneLocation = "Eastern Standard Time"
+# $TimezoneLocation = "Eastern Standard Time"
 
 if($ntpserver1 -and $ntpserver2 -and $ntpserver3)
 {
