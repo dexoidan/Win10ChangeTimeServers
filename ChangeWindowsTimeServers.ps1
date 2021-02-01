@@ -65,7 +65,7 @@ function ChangeTimeServers
 	if(Get-Service w32time | Where-Object {$_.Status -eq "Stopped"})
 	{
 		Write-Host "Setting the Time Zone..."
-		Set-TimeZone -Id "Central Time (US og Canada)" -Confirm -ErrorAction SilentlyContinue
+		Set-TimeZone -Id $TimezoneLocation -Confirm -ErrorAction SilentlyContinue
 		Write-Host "Change NTP Time Servers..."
 		Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
 		Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 2 -Value $ntpserver2
@@ -119,6 +119,8 @@ function WinTimeSynchronization
 		Invoke-Expression -Command 'w32tm /resync'
 	}
 }
+
+$TimezoneLocation = "Central Time"
 
 if($ntpserver1 -and $ntpserver2 -and $ntpserver3)
 {
