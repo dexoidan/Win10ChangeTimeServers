@@ -66,9 +66,9 @@ function ChangeTimeServers
 	{
 		Write-Host "Setting the Time Zone..."
 		# SetTimezone
-        Set-TimeZone -Id "GMT Standard Time" -Confirm -ErrorAction SilentlyContinue
+        	Set-TimeZone -Id "GMT Standard Time" -Confirm -ErrorAction SilentlyContinue
 		Write-Host "Change NTP Time Servers..."
-        $getOSarch = (Get-CimInstance -ClassName win32_operatingsystem).OSArchitecture
+        	$getOSarch = (Get-CimInstance -ClassName win32_operatingsystem).OSArchitecture
 		if($getOSarch -eq "32-bit")
 		{
 			Set-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\DateTime\Servers -Name 1 -Value $ntpserver1
